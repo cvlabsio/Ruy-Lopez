@@ -23,7 +23,7 @@ The initial use-case idea was to block AV/EDR vendor DLLs from being loaded, so 
 <img src="https://github.com/S3cur3Th1sSh1t/Ruy-Lopez/blob/main/images/Idea.png" alt="Workflow" width="700" height="450">
 </p>
 
-The SubFolder `HookForward` contains the actual PIC-Code which can be used as EntryPoint for a hooked `NtCreateSection` function. `Blockdll.nim` on the other hand side spawns a new Powershell process in suspended mode, injects the shellcode into that process and remotely hooks `NtCreateSecion` to `JMP` to our shellcode. As this is a PoC, *only* `amsi.dll` is being blocked in the new in this case Powershell process, which effectively leads to an AMSI bypass. But the PoC was also tested against multiple EDR vendors and their DLLs without throwing an alert or without being blocked **before** releasing it. I expect detections to come up after releasing it here.
+The SubFolder `HookForward` contains the actual PIC-Code which can be used as EntryPoint for a hooked `NtCreateSection` function. `Blockdll.nim` on the other hand side spawns a new Powershell process in suspended mode, injects the shellcode into that process and remotely hooks `NtCreateSecion` to `JMP` to our shellcode. As this is a PoC, *only* `amsi.dll` is being blocked in a new Powershell process, which effectively leads to an AMSI bypass. But the PoC was also tested against multiple EDR vendors and their DLLs without throwing an alert or without being blocked **before** releasing it. I expect detections to come up after releasing it here.
 
 ## Challenges / Limitations
 
@@ -69,6 +69,7 @@ nim c -d:release BlockDll.nim # Windows
 
 - Userland-hook evasion for injection from the host process
 - RX Shellcode (needs some PIC-code changes)
+- RX permissions for the hooked function memory (see comments)
 - Use hashing instead of plain APIs to block
 - Use hardware breakpoints instead of hooking
 
